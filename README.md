@@ -1,106 +1,261 @@
-# Bank Customer Churn - Predictive Modeling & Risk Scoring
+# Bank Customer Churn Prediction using Machine Learning
 
-This is my project for the "Predictive Modeling and Risk Scoring for Bank
-Customer Churn" assignment (Unified Mentor - European Central Bank brief).
+## Predictive Modeling & Risk Scoring for Bank Customer Churn
 
-Basic idea: instead of just looking back at who churned and why, build a
-model that scores every customer with a churn probability *before* they
-leave, so retention teams can actually do something about it.
+### Submitted By
 
-Dataset is `European_Bank.csv` - 10,000 customers from a European bank
-(France/Spain/Germany), ~20% churn rate.
+- **Name:** Pathlavath Shiva Kumar
+- **Role:** Data Analysis Intern
+- **Organization:** Unified Mentor Pvt. Ltd.
 
-## What's in here
+---
 
-- `data/` - the raw csv
-- `notebooks/EDA.ipynb` - EDA, already run so you can see the plots without
-  re-executing anything
-- `src/data_prep.py` - cleaning + feature engineering, used by both the
-  training script and the app
-- `src/train_model.py` - trains 5 models and picks the best one by ROC-AUC
-- `src/explain.py` - SHAP explainability, saves plots to `outputs/`
-- `app/app.py` - the Streamlit app (risk calculator, prob distribution,
-  feature importance, what-if simulator)
-- `models/` - saved model + scaler + metrics (already generated, but you can
-  regenerate by re-running the scripts below)
-- `reports/` - research paper + executive summary
-- `outputs/` - all the chart images used in the report
+## Project Overview
 
-## How to actually run this
+This project focuses on **Predictive Modeling and Risk Scoring for Bank Customer Churn** using Machine Learning. The objective is to identify customers who are likely to leave the bank by assigning a churn probability score. This enables banks to proactively retain customers through targeted interventions.
 
-Install everything first:
+The project is based on the **European Bank Customer Churn Dataset**, which contains information for approximately **10,000 customers** from **France, Germany, and Spain**, with an overall churn rate of nearly **20%**.
+
+---
+
+## Project Structure
+
 ```
+bank_churn_project/
+│
+├── app/
+│   └── app.py
+│
+├── data/
+│   └── European_Bank.csv
+│
+├── models/
+│   ├── best_model.pkl
+│   ├── scaler.pkl
+│   ├── metrics.json
+│   ├── feature_names.json
+│   └── all_models.pkl
+│
+├── notebooks/
+│   └── EDA.ipynb
+│
+├── outputs/
+│
+├── reports/
+│
+├── src/
+│   ├── data_prep.py
+│   ├── train_model.py
+│   └── explain.py
+│
+├── requirements.txt
+└── README.md
+```
+
+---
+
+# Project Features
+
+- Data Cleaning and Preprocessing
+- Feature Engineering
+- Exploratory Data Analysis (EDA)
+- Machine Learning Model Training
+- Model Performance Evaluation
+- SHAP Explainability
+- Interactive Streamlit Dashboard
+
+---
+
+# Machine Learning Models Used
+
+The following models are trained and compared:
+
+- Logistic Regression
+- Decision Tree
+- Random Forest
+- Gradient Boosting
+- XGBoost
+
+The best-performing model is selected based on the **ROC-AUC Score**.
+
+---
+
+# Feature Engineering
+
+Several additional features were created to improve prediction performance.
+
+Examples include:
+
+- Balance / Salary Ratio
+- Product Density
+- Active Member × Number of Products
+- Age × Tenure
+
+---
+
+# Explainable AI
+
+The project uses **SHAP (SHapley Additive Explanations)** to explain model predictions.
+
+The most influential features include:
+
+- Number of Products
+- Age
+- Geography
+- Balance
+- Active Membership
+- Balance Salary Ratio
+
+---
+
+# Streamlit Dashboard
+
+The dashboard provides four interactive pages:
+
+### 1. Churn Risk Calculator
+
+Predicts customer churn probability based on user inputs.
+
+### 2. Probability Distribution
+
+Displays the distribution of churn probabilities across customers.
+
+### 3. Feature Importance
+
+Visualizes SHAP feature importance to explain model predictions.
+
+### 4. What-If Simulator
+
+Allows users to modify customer attributes and observe changes in predicted churn probability.
+
+---
+
+# Installation
+
+Create a virtual environment (recommended):
+
+```bash
+python -m venv venv
+```
+
+Activate it.
+
+Windows:
+
+```bash
+venv\Scripts\activate
+```
+
+Install dependencies:
+
+```bash
 pip install -r requirements.txt
 ```
 
-Then, from the project root:
+---
 
-```
-python src/train_model.py      # trains all 5 models, saves the best one to models/
-python src/explain.py          # runs SHAP, saves plots to outputs/
-streamlit run app/app.py       # launches the dashboard
-```
+# Running the Project
 
-That's it. `models/` already has everything saved from my last run so you
-technically don't have to retrain before opening the app - but if you're
-submitting this as your own project I'd recommend running it yourself at
-least once so the numbers are freshly generated on your machine.
+### Train Models
 
-If you want to redo the EDA notebook:
-```
-jupyter nbconvert --to notebook --execute --inplace notebooks/EDA.ipynb
+```bash
+python src/train_model.py
 ```
 
-One thing to be careful about - all these scripts assume you're running
-them from the project root folder (the one this README is in), because the
-paths to `data/` and `models/` are relative. If you cd into `src/` first and
-run `python train_model.py` from there it'll break.
+This trains all machine learning models and saves the best-performing model inside the `models/` folder.
 
-## Modeling notes
+---
 
-Dropped `CustomerId`, `Surname` and `Year` since they don't carry any
-predictive signal (Year is literally constant across the whole dataset).
-One-hot encoded Geography and Gender, scaled the numeric columns.
+### Generate SHAP Explanations
 
-Added a few engineered features since the assignment specifically asked
-for them:
-- Balance / Salary ratio
-- Products / (Tenure + 1) - a rough "product density"
-- IsActiveMember x NumOfProducts - this one turned out to matter a lot
-- Age x Tenure
+```bash
+python src/explain.py
+```
 
-Trained Logistic Regression as a baseline, then Decision Tree, Random
-Forest, Gradient Boosting and XGBoost. Used class weighting on all of them
-since churn is imbalanced (~80/20). Picked the winner by ROC-AUC on a
-stratified 80/20 test split - Gradient Boosting won in my run (~0.87
-ROC-AUC), but don't be surprised if it comes out slightly different for you
-since there's some randomness in training even with a fixed seed depending
-on package versions.
+This creates SHAP explanations and stores visualizations inside the `outputs/` folder.
 
-For explainability, used SHAP's TreeExplainer on the winning model. Age and
-NumOfProducts consistently come out as the two biggest drivers, which
-matches what shows up in the EDA too.
+---
 
-## A few things I noticed while doing the EDA (worth mentioning if you
-write up your own report)
+### Launch Streamlit Dashboard
 
-- Germany churns a lot more than France or Spain despite having a similar
-  number of customers - not something I expected going in.
-- Customers with 3-4 products actually churn *more* than customers with 1-2,
-  which is backwards from what you'd normally assume (more products = more
-  sticky customer). This is one of the stronger signals in the whole
-  dataset.
-- Inactive members churn at roughly double the rate of active ones. Out of
-  everything in the data, this is probably the most useful one for a bank
-  to act on since it's something they can actually influence.
+```bash
+streamlit run app/app.py
+```
 
-## Known limitations / stuff I'd improve with more time
+Open your browser and visit:
 
-- No hyperparameter tuning beyond some manual guesses - a proper grid
-  search or Optuna run would probably squeeze out a bit more performance.
-- The "what-if simulator" in the app assumes you can independently change
-  one feature at a time, which isn't totally realistic (e.g. changing
-  NumOfProducts probably correlates with other things in reality).
-- Only one train/test split was used for the final numbers - k-fold CV
-  would give a more reliable estimate, it's mentioned as optional in the
-  brief so I skipped it to save time.
+```
+http://localhost:8501
+```
+
+---
+
+# Dataset
+
+**Dataset Name:** European Bank Customer Churn Dataset
+
+Number of Customers: **10,000**
+
+Countries:
+
+- France
+- Germany
+- Spain
+
+Target Variable:
+
+- Exited (Customer Churn)
+
+---
+
+# Technologies Used
+
+- Python
+- Pandas
+- NumPy
+- Scikit-learn
+- XGBoost
+- SHAP
+- Matplotlib
+- Seaborn
+- Streamlit
+
+---
+
+# Model Performance
+
+The project evaluates models using:
+
+- Accuracy
+- Precision
+- Recall
+- F1 Score
+- ROC-AUC Score
+
+The best model is automatically selected and saved for deployment.
+
+---
+
+# Future Improvements
+
+- Hyperparameter Optimization
+- Cross Validation
+- Additional Feature Engineering
+- Deep Learning Models
+- Real-Time Customer Monitoring
+
+---
+
+# Conclusion
+
+This project demonstrates an end-to-end Machine Learning pipeline for customer churn prediction, including data preprocessing, feature engineering, predictive modeling, explainable AI using SHAP, and deployment through an interactive Streamlit dashboard. The solution enables proactive customer retention by identifying high-risk customers and providing interpretable predictions.
+
+---
+
+## Submitted By
+
+**Pathlavath Shiva Kumar**
+
+**Data Analysis Intern**
+
+**Unified Mentor Pvt. Ltd.**
