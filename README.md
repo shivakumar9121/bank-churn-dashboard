@@ -1,261 +1,81 @@
-# Bank Customer Churn Prediction using Machine Learning
+# Bank Customer Churn — ML & Explainability Dashboard
 
-## Predictive Modeling & Risk Scoring for Bank Customer Churn
+A Python and Streamlit project that turns bank customer records into churn-risk estimates, model comparisons and explanations. Developed by **Pathlavath Shiva Kumar** during the Data Analyst internship at **Unified Mentor Pvt. Ltd.**
 
-### Submitted By
+## Problem and approach
 
-- **Name:** Pathlavath Shiva Kumar
-- **Role:** Data Analysis Intern
-- **Organization:** Unified Mentor Pvt. Ltd.
+Customer-retention analysis needs both a risk estimate and a way to understand it. This project prepares tabular customer data, compares five classifiers and exposes the selected model through an interactive dashboard. Predictions are an analytical prototype, not measured retention outcomes.
 
----
+## What is implemented
 
-## Project Overview
+- Data cleaning, categorical encoding and four engineered features: balance-to-salary ratio, product density, engagement-product score and age-tenure interaction.
+- A stratified 80/20 split, with numeric scaling fitted on the training partition.
+- Logistic regression, decision tree, random forest, gradient boosting and XGBoost models.
+- Accuracy, precision, recall, F1 and ROC-AUC evaluation, with model selection by ROC-AUC.
+- SHAP explanations and a Streamlit interface for a risk calculator, score distribution, feature importance and what-if exploration.
 
-This project focuses on **Predictive Modeling and Risk Scoring for Bank Customer Churn** using Machine Learning. The objective is to identify customers who are likely to leave the bank by assigning a churn probability score. This enables banks to proactively retain customers through targeted interventions.
+## Architecture
 
-The project is based on the **European Bank Customer Churn Dataset**, which contains information for approximately **10,000 customers** from **France, Germany, and Spain**, with an overall churn rate of nearly **20%**.
-
----
-
-## Project Structure
-
-```
-bank_churn_project/
-│
-├── app/
-│   └── app.py
-│
-├── data/
-│   └── European_Bank.csv
-│
-├── models/
-│   ├── best_model.pkl
-│   ├── scaler.pkl
-│   ├── metrics.json
-│   ├── feature_names.json
-│   └── all_models.pkl
-│
-├── notebooks/
-│   └── EDA.ipynb
-│
-├── outputs/
-│
-├── reports/
-│
-├── src/
-│   ├── data_prep.py
-│   ├── train_model.py
-│   └── explain.py
-│
-├── requirements.txt
-└── README.md
+```mermaid
+flowchart LR
+  A[Customer CSV] --> B[Clean, encode, engineer features]
+  B --> C[Stratified train/test split]
+  C --> D[Fit scaler on training data]
+  D --> E[Compare five classifiers]
+  E --> F[Saved model and metadata]
+  F --> G[Streamlit dashboard]
+  F --> H[SHAP explanations]
+  H --> G
 ```
 
----
+**Stack:** Python, Pandas, NumPy, scikit-learn, XGBoost, SHAP, Matplotlib, Streamlit and Joblib.
 
-# Project Features
+## Repository structure
 
-- Data Cleaning and Preprocessing
-- Feature Engineering
-- Exploratory Data Analysis (EDA)
-- Machine Learning Model Training
-- Model Performance Evaluation
-- SHAP Explainability
-- Interactive Streamlit Dashboard
+```text
+app/app.py             Interactive dashboard
+data/European_Bank.csv Input dataset
+src/data_prep.py        Reusable preparation and scaling
+src/train_model.py      Training, evaluation and model selection
+src/explain.py          SHAP analysis and plots
+models/                Saved models, scaler, feature names and metrics
+outputs/               Generated analysis figures
+notebooks/EDA.ipynb     Exploratory analysis
+```
 
----
+## Run locally
 
-# Machine Learning Models Used
-
-The following models are trained and compared:
-
-- Logistic Regression
-- Decision Tree
-- Random Forest
-- Gradient Boosting
-- XGBoost
-
-The best-performing model is selected based on the **ROC-AUC Score**.
-
----
-
-# Feature Engineering
-
-Several additional features were created to improve prediction performance.
-
-Examples include:
-
-- Balance / Salary Ratio
-- Product Density
-- Active Member × Number of Products
-- Age × Tenure
-
----
-
-# Explainable AI
-
-The project uses **SHAP (SHapley Additive Explanations)** to explain model predictions.
-
-The most influential features include:
-
-- Number of Products
-- Age
-- Geography
-- Balance
-- Active Membership
-- Balance Salary Ratio
-
----
-
-# Streamlit Dashboard
-
-The dashboard provides four interactive pages:
-
-### 1. Churn Risk Calculator
-
-Predicts customer churn probability based on user inputs.
-
-### 2. Probability Distribution
-
-Displays the distribution of churn probabilities across customers.
-
-### 3. Feature Importance
-
-Visualizes SHAP feature importance to explain model predictions.
-
-### 4. What-If Simulator
-
-Allows users to modify customer attributes and observe changes in predicted churn probability.
-
----
-
-# Installation
-
-Create a virtual environment (recommended):
+Run commands from the repository root. Use a virtual environment and install the listed dependencies.
 
 ```bash
-python -m venv venv
-```
-
-Activate it.
-
-Windows:
-
-```bash
-venv\Scripts\activate
-```
-
-Install dependencies:
-
-```bash
+git clone https://github.com/shivakumar9121/bank-churn-dashboard.git
+cd bank-churn-dashboard
+python -m venv .venv
+# Windows: .venv\Scripts\activate
+# macOS/Linux: source .venv/bin/activate
 pip install -r requirements.txt
-```
-
----
-
-# Running the Project
-
-### Train Models
-
-```bash
 python src/train_model.py
-```
-
-This trains all machine learning models and saves the best-performing model inside the `models/` folder.
-
----
-
-### Generate SHAP Explanations
-
-```bash
 python src/explain.py
-```
-
-This creates SHAP explanations and stores visualizations inside the `outputs/` folder.
-
----
-
-### Launch Streamlit Dashboard
-
-```bash
 streamlit run app/app.py
 ```
 
-Open your browser and visit:
+The app opens at the local URL printed by Streamlit. Retrain artifacts in your environment if the checked-in serialized models are incompatible with installed library versions. Only load model files from a source you trust.
 
-```
-http://localhost:8501
-```
+## Analysis previews
 
----
+These are existing figures generated by the project, not mockups.
 
-# Dataset
+![ROC curves from the recorded experiment](outputs/report_roc_curves.png)
+![SHAP feature importance from the recorded experiment](outputs/shap_bar_plot.png)
 
-**Dataset Name:** European Bank Customer Churn Dataset
+## Results and limits
 
-Number of Customers: **10,000**
+The repository contains experiment metrics in `models/metrics.json` and model-comparison plots in `outputs/`. The same test partition is used to compare and select models, so the recorded scores are not an independent final assessment. No claim is made about production users, customer-retention uplift or business impact.
 
-Countries:
+Next steps are a separate validation/final-test protocol, cross-validation, calibration checks and pinned dependency versions. The what-if interface shows model sensitivity, not a causal effect of changing customer behavior.
 
-- France
-- Germany
-- Spain
+## Links
 
-Target Variable:
+- [Source repository](https://github.com/shivakumar9121/bank-churn-dashboard)
+- [LinkedIn](https://www.linkedin.com/in/pathlavath-shiva-kumar-441517321/)
 
-- Exited (Customer Churn)
-
----
-
-# Technologies Used
-
-- Python
-- Pandas
-- NumPy
-- Scikit-learn
-- XGBoost
-- SHAP
-- Matplotlib
-- Seaborn
-- Streamlit
-
----
-
-# Model Performance
-
-The project evaluates models using:
-
-- Accuracy
-- Precision
-- Recall
-- F1 Score
-- ROC-AUC Score
-
-The best model is automatically selected and saved for deployment.
-
----
-
-# Future Improvements
-
-- Hyperparameter Optimization
-- Cross Validation
-- Additional Feature Engineering
-- Deep Learning Models
-- Real-Time Customer Monitoring
-
----
-
-# Conclusion
-
-This project demonstrates an end-to-end Machine Learning pipeline for customer churn prediction, including data preprocessing, feature engineering, predictive modeling, explainable AI using SHAP, and deployment through an interactive Streamlit dashboard. The solution enables proactive customer retention by identifying high-risk customers and providing interpretable predictions.
-
----
-
-## Submitted By
-
-**Pathlavath Shiva Kumar**
-
-**Data Analysis Intern**
-
-**Unified Mentor Pvt. Ltd.**
